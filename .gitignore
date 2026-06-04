@@ -1,0 +1,21 @@
+###### Python ######
+backend/.env
+backend/__pycache__/
+backend/.venv/
+backend/*.egg-info/
+
+###### Node ######
+web-app/node_modules/
+web-app/dist/
+
+###### C# ######
+windows-client/bin/
+windows-client/obj/
+windows-client/.vs/
+*.user
+
+###### General ######
+# OS Junk
+.DB_Store
+Thumbs.db
+*.db

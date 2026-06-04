@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "windows-client (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "windows-client (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
