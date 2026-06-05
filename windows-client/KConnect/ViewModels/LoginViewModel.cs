@@ -42,7 +42,21 @@ public partial class LoginViewModel : BaseViewModel
         if (success) LoginSucceeded?.Invoke();
         else SetError(message);
     }
-
+    
+    [RelayCommand]
+    private async Task ForgotPasswordAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Identifier) || !Identifier.Contains('@'))
+        {
+            SetError("Enter your email address in the field above first");
+            return;
+        }
+        IsBusy = true;
+        await _auth.ForgotPasswordAsync(Identifier);
+        IsBusy = false;
+        SetSuccess("If that email is registered, a reset link has been sent");
+    }
+    
     [RelayCommand]
     private void GoToRegister() => NavigateToRegister?.Invoke();
 }

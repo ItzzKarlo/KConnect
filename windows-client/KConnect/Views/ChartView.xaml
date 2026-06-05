@@ -1,0 +1,12 @@
+﻿<UserControl x:Class="KConnect.Views.ChatView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="#111111">
+    <Grid>
+        <TextBlock Text="Chat — coming soon"
+                   Foreground="White"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   FontSize="20"/>
+    </Grid>
+</UserControl>

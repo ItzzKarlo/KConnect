@@ -1,24 +1,23 @@
-﻿using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using KConnect.Views;
 
-namespace KConnect
+namespace KConnect;
+
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    private static MainWindow? _instance;
+    public static MainWindow Instance => _instance!;
+
+    public MainWindow()
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+        _instance = this;
+        NavigateTo(new LoginView());
+    }
+
+    public void NavigateTo(UserControl view)
+    {
+        MainContent.Content = view;
     }
 }

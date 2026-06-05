@@ -75,4 +75,10 @@ public class AuthService
         }
         catch { return "Unknown error"; }
     }
+    
+    public async Task ForgotPasswordAsync(string email)
+    {
+        try { await _api.PostAsync("/auth/forgot-password", new { email }); }
+        catch { /* swallow — always show success to avoid enumeration */ }
+    }
 }
