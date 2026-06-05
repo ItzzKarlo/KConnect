@@ -10,10 +10,19 @@ public partial class LoginView : UserControl
     public LoginView()
     {
         InitializeComponent();
-        _vm = (LoginViewModel)DataContext;
 
+        // Set the ViewModel if not already set
+        if (DataContext is not LoginViewModel vm)
+        {
+            vm = new LoginViewModel();
+            DataContext = vm;
+        }
+        _vm = vm;
+
+        // Password binding
         PwdBox.PasswordChanged += (_, _) => _vm.Password = PwdBox.Password;
 
+        // Event subscriptions
         _vm.LoginSucceeded += () =>
         {
             MainWindow.Instance.NavigateTo(new ChatView());

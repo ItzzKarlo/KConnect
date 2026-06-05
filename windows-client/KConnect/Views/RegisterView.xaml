@@ -9,7 +9,7 @@
     </UserControl.DataContext>
 
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </UserControl.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -71,7 +71,7 @@
                 <!-- Error message -->
                 <Border Background="#2A0000" CornerRadius="6" Padding="12,8"
                         Margin="0,0,0,12"
-                        Visibility="{Binding HasError, Converter={StaticResource BoolToVisibility}}">
+                        Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <TextBlock Text="{Binding ErrorMessage}"
                                Foreground="#FF6666" FontSize="12"
                                TextWrapping="Wrap"/>
@@ -80,7 +80,7 @@
                 <!-- Success message -->
                 <Border Background="#002A00" CornerRadius="6" Padding="12,8"
                         Margin="0,0,0,12"
-                        Visibility="{Binding HasSuccess, Converter={StaticResource BoolToVisibility}}">
+                        Visibility="{Binding HasSuccess, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <TextBlock Text="{Binding SuccessMessage}"
                                Foreground="#66FF66" FontSize="12"
                                TextWrapping="Wrap"/>
@@ -94,7 +94,7 @@
                         <TextBlock Text="Create Account" FontSize="14"/>
                         <TextBlock Text="  ..."
                                    FontSize="14"
-                                   Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}"/>
+                                   Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     </StackPanel>
                 </Button>
 
