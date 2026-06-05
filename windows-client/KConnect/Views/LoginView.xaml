@@ -1,7 +1,6 @@
 ﻿<UserControl x:Class="KConnect.Views.LoginView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="clr-namespace:KConnect.ViewModels"
              Background="#111111">
 
     <Grid VerticalAlignment="Center">
@@ -58,17 +57,14 @@
             <!-- MFA -->
             <StackPanel Visibility="{Binding MfaRequired, Converter={StaticResource BooleanToVisibilityConverter}}"
                         Margin="0,0,0,16">
-
                 <TextBlock Text="AUTHENTICATOR CODE"
                            Foreground="#666666"
                            FontSize="11"
                            FontWeight="SemiBold"
                            Margin="2,0,0,6"/>
-
                 <TextBox Style="{StaticResource DarkInput}"
                          Text="{Binding MfaCode, UpdateSourceTrigger=PropertyChanged}"
                          MaxLength="6"/>
-
                 <TextBlock Text="Enter the 6-digit code from your authenticator app"
                            Foreground="#888888"
                            FontSize="11"
@@ -81,7 +77,6 @@
                     Padding="12,8"
                     Margin="0,0,0,12"
                     Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibilityConverter}}">
-
                 <TextBlock Text="{Binding ErrorMessage}"
                            Foreground="#FF6666"
                            FontSize="12"
@@ -94,7 +89,6 @@
                     Padding="12,8"
                     Margin="0,0,0,12"
                     Visibility="{Binding HasSuccess, Converter={StaticResource BooleanToVisibilityConverter}}">
-
                 <TextBlock Text="{Binding SuccessMessage}"
                            Foreground="#66FF66"
                            FontSize="12"
@@ -106,33 +100,28 @@
                     Command="{Binding LoginCommand}"
                     Height="44"
                     Margin="0,0,0,20">
-
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <TextBlock Text="Sign In" FontSize="14"/>
-
                     <TextBlock Text="  ..."
                                FontSize="14"
                                Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                 </StackPanel>
-
             </Button>
 
-            <!-- Register -->
+            <!-- Register link - FIXED -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <TextBlock Text="Don't have an account? "
                            Foreground="#888888"
                            FontSize="13"/>
-
-                <TextBlock Text="Create one"
-                           Foreground="#CCAC58"
-                           FontSize="13"
-                           FontWeight="SemiBold"
-                           Cursor="Hand">
-                    <TextBlock.InputBindings>
-                        <MouseBinding MouseAction="LeftClick"
-                                      Command="{Binding GoToRegisterCommand}"/>
-                    </TextBlock.InputBindings>
-                </TextBlock>
+                <Button Style="{StaticResource LinkButton}"
+                        Command="{Binding GoToRegisterCommand}"
+                        Content="Create one"
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        Padding="0"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Cursor="Hand"/>
             </StackPanel>
 
         </StackPanel>

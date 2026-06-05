@@ -10,20 +10,22 @@ public partial class RegisterView : UserControl
     public RegisterView()
     {
         InitializeComponent();
-        _vm = (RegisterViewModel)DataContext;
 
+        if (DataContext is not RegisterViewModel vm)
+        {
+            vm = new RegisterViewModel();
+            DataContext = vm;
+        }
+        _vm = vm;
+
+        // Password bindings
         PasswordBox.PasswordChanged += (_, _) => _vm.Password = PasswordBox.Password;
         ConfirmPasswordBox.PasswordChanged += (_, _) => _vm.ConfirmPassword = ConfirmPasswordBox.Password;
 
-        _vm.RegisterSucceeded += () =>
-        {
-            // Stay on register view, success message shown
-            // User needs to verify email before they can log in
-        };
-
+        // Safe navigation
         _vm.NavigateToLogin += () =>
         {
-            MainWindow.Instance.NavigateTo(new LoginView());
+            MainWindow.Instance?.NavigateTo(new LoginView());
         };
     }
 }
