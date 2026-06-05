@@ -16,5 +16,5 @@ M:\_Development\_Projects\KConnect\windows-client\KConnect\App.xaml
 21131812680
 MainWindow.xaml;Views\ChartView.xaml;Views\LoginView.xaml;Views\RegisterView.xaml;
 
-True
+False
 

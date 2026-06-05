@@ -12,7 +12,7 @@ public partial class LoginView : UserControl
         InitializeComponent();
         _vm = (LoginViewModel)DataContext;
 
-        PasswordBox.PasswordChanged += (_, _) => _vm.Password = PasswordBox.Password;
+        PwdBox.PasswordChanged += (_, _) => _vm.Password = PwdBox.Password;
 
         _vm.LoginSucceeded += () =>
         {
