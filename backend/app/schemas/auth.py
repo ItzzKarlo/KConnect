@@ -51,3 +51,32 @@ class MFASetupResponse(BaseModel):
 
 class MFAVerifyRequest(BaseModel):
     code: str
+
+class VerifyEmailRequest(BaseModel):
+    token: str
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+    @field_validator("new_password")
+    @classmethod
+    def password_strong(cls, v):
+        if len(v) < 8: 
+            raise ValueError("New password must be atleast 8 characters.")
+        return v
+    
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+class UserSearchResult(BaseModel):
+    id: UUID
+    username: str
+    display_name: str | None = None
+    is_verified: bool
+
+    model_config = {"from_attributes": True}
