@@ -3,11 +3,16 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import hash_password, verify_password, create_access_token, create_refresh_token, decode_token
+from app.core.email import send_verification_email, send_password_reset_email
+from app.core.tokens import generate_email_token, verify_email_token
 from app.models.user import User
-from app.schemas.auth import RegisterRequest, LoginRequest, TokenResponse, RefreshRequest, MeResponse
+from app.schemas.auth import (
+    RegisterRequest, LoginRequest, TokenResponse, RefreshRequest, MeResponse,
+    VerifyEmailRequest, ForgotPasswordRequest, ResetPasswordRequest, ChangePasswordRequest
+)
 from app.api.deps import get_current_user
-from jose import JWTError
 import pyotp
+from jose import JWTError
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -30,9 +35,25 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     db.refresh(user)
 
     return {
-        "message": "Account successfully created",
+        "message": "Account successfully created. Please check your email to verify your account.",
         "user_id": str(user.id)
     }
+
+@router.post("/verify-email")
+def verify_email(payload: VerifyEmailRequest, db: Session = Depends(get_db)):
+    email = verify_email_token(payload.token)
+    if not email:
+        raise HTTPException(400, "Verification link is invalid or has expired.")
+    
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(404, "User not found")
+    if user.is_verified:
+        return {"message": "Email is already verified"}
+    
+    user.is_verified = True
+    db.commit()
+    return {"message", "Email verified successfully."}
 
 @router.post("/login", response_model=TokenResponse)
 def login(payload: LoginRequest, db: Session = Depends(get_db)):
@@ -46,6 +67,8 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
         raise HTTPException(401, "Invalid credentials")
     if not user.is_active:
         raise HTTPException(403, "Account is disabled.")
+    if not user.is_verified:
+        raise HTTPException(403, "Please verify your email before logging in.")
     
     # MFA Check
     if user.mfa_enabled:
@@ -61,6 +84,42 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
         access_token=create_access_token(token_data),
         refresh_token=create_refresh_token(token_data)
     )
+
+@router.post("/resend-verification")
+def resend_verification(payload: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == payload.email).first()
+
+    if user and not user.is_verified:
+        token = generate_email_token(user.email)
+        send_verification_email(user.email, user.username, token)
+    return {"message": "If that email exists and is unverified, a new link has been sent for email verification."}
+
+@router.post("/reset-password")
+def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db)):
+    email = verify_email_token(payload.token, salt="password-reset", max_age=3600)
+    if not email:
+        raise HTTPException(400, "Reset link is invalid or has expired.")
+    
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(404, "User not found.")
+    
+    user.password_hash = hash_password(payload.new_password)
+    db.commit()
+    return {"message": "Password reset successfully."}
+
+@router.post("/change-password")
+def change_password(
+    payload: ChangePasswordRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if not verify_password(payload.current_password, current_user.password_hash):
+        raise HTTPException(401, "Current password is incorrect.")
+    
+    current_user.password_hash = hash_password(payload.new_password)
+    db.commit()
+    return {"message": "Password changed successfully"}
 
 @router.post("/refresh", response_model=TokenResponse)
 def refresh(payload: RefreshRequest, db: Session = Depends(get_db)):
