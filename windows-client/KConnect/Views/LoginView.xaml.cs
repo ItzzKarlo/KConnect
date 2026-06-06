@@ -1,4 +1,4 @@
-﻿using System.Windows.Controls;
+using System.Windows.Controls;
 using KConnect.ViewModels;
 
 namespace KConnect.Views;
@@ -11,17 +11,13 @@ public partial class LoginView : UserControl
     {
         InitializeComponent();
 
-        if (DataContext is not LoginViewModel vm)
-        {
-            vm = new LoginViewModel();
-            DataContext = vm;
-        }
-        _vm = vm;
+        // DataContext is set in XAML — just grab it
+        _vm = (LoginViewModel)DataContext;
 
-        // Password binding
+        // Wire PasswordBox manually (WPF security — Password can't be bound in XAML)
         PwdBox.PasswordChanged += (_, _) => _vm.Password = PwdBox.Password;
 
-        // Safe event subscriptions
+        // Navigation events
         _vm.LoginSucceeded += () =>
         {
             MainWindow.Instance?.NavigateTo(new ChatView());

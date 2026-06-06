@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using KConnect.Views;
 
@@ -7,7 +7,7 @@ namespace KConnect;
 public partial class MainWindow : Window
 {
     private static MainWindow? _instance;
-    public static MainWindow Instance => _instance!;
+    public static MainWindow? Instance => _instance;
 
     public MainWindow()
     {

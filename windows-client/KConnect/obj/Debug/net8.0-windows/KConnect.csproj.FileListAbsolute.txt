@@ -19,10 +19,8 @@ M:\_Development\_Projects\KConnect\windows-client\KConnect\bin\Debug\net8.0-wind
 M:\_Development\_Projects\KConnect\windows-client\KConnect\bin\Debug\net8.0-windows\Websocket.Client.dll
 M:\_Development\_Projects\KConnect\windows-client\KConnect\obj\Debug\net8.0-windows\KConnect.csproj.AssemblyReference.cache
 M:\_Development\_Projects\KConnect\windows-client\KConnect\obj\Debug\net8.0-windows\MainWindow.baml
-M:\_Development\_Projects\KConnect\windows-client\KConnect\obj\Debug\net8.0-windows\Views\ChartView.baml
 M:\_Development\_Projects\KConnect\windows-client\KConnect\obj\Debug\net8.0-windows\App.baml
 M:\_Development\_Projects\KConnect\windows-client\KConnect\obj\Debug\net8.0-windows\MainWindow.g.cs
-M:\_Development\_Projects\KConnect\windows-client\KConnect\obj\Debug\net8.0-windows\Views\ChartView.g.cs
 M:\_Development\_Projects\KConnect\windows-client\KConnect\obj\Debug\net8.0-windows\Views\LoginView.g.cs
 M:\_Development\_Projects\KConnect\windows-client\KConnect\obj\Debug\net8.0-windows\Views\RegisterView.g.cs
 M:\_Development\_Projects\KConnect\windows-client\KConnect\obj\Debug\net8.0-windows\App.g.cs
@@ -41,3 +39,7 @@ M:\_Development\_Projects\KConnect\windows-client\KConnect\obj\Debug\net8.0-wind
 M:\_Development\_Projects\KConnect\windows-client\KConnect\obj\Debug\net8.0-windows\KConnect.pdb
 M:\_Development\_Projects\KConnect\windows-client\KConnect\obj\Debug\net8.0-windows\KConnect.genruntimeconfig.cache
 M:\_Development\_Projects\KConnect\windows-client\KConnect\obj\Debug\net8.0-windows\ref\KConnect.dll
+M:\_Development\_Projects\KConnect\windows-client\KConnect\obj\Debug\net8.0-windows\Views\ChatView.baml
+M:\_Development\_Projects\KConnect\windows-client\KConnect\obj\Debug\net8.0-windows\Views\ChatView.g.cs
+M:\_Development\_Projects\KConnect\windows-client\KConnect\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
+M:\_Development\_Projects\KConnect\windows-client\KConnect\obj\Debug\net8.0-windows\KConnect_MarkupCompile.lref

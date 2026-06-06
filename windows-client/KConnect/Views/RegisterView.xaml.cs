@@ -1,4 +1,4 @@
-﻿using System.Windows.Controls;
+using System.Windows.Controls;
 using KConnect.ViewModels;
 
 namespace KConnect.Views;
@@ -11,18 +11,15 @@ public partial class RegisterView : UserControl
     {
         InitializeComponent();
 
-        if (DataContext is not RegisterViewModel vm)
-        {
-            vm = new RegisterViewModel();
-            DataContext = vm;
-        }
-        _vm = vm;
+        // DataContext is set in XAML — just grab it
+        _vm = (RegisterViewModel)DataContext;
 
-        // Password bindings
-        PasswordBox.PasswordChanged += (_, _) => _vm.Password = PasswordBox.Password;
-        ConfirmPasswordBox.PasswordChanged += (_, _) => _vm.ConfirmPassword = ConfirmPasswordBox.Password;
+        // Wire PasswordBoxes manually (WPF security — Password can't be bound in XAML)
+        // Note: named PwdBox / ConfirmPwdBox to avoid collision with the PasswordBox class name
+        PwdBox.PasswordChanged        += (_, _) => _vm.Password        = PwdBox.Password;
+        ConfirmPwdBox.PasswordChanged += (_, _) => _vm.ConfirmPassword = ConfirmPwdBox.Password;
 
-        // Safe navigation
+        // Navigation events
         _vm.NavigateToLogin += () =>
         {
             MainWindow.Instance?.NavigateTo(new LoginView());

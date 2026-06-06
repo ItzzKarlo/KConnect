@@ -1,4 +1,3 @@
-﻿// Views/ChatView.xaml.cs
 using System.Windows.Controls;
 
 namespace KConnect.Views;

@@ -11,7 +11,7 @@ class RegisterRequest(BaseModel):
     @field_validator("username")
     @classmethod
     def username_valid(cls, v):
-        if not re.match(r"[a-zA-Z0-9_-.]{3,32}$", v):
+        if not re.match(r"[a-zA-Z0-9_]{3,32}$", v):
             raise ValueError("Username must be 3 - 32 chars and may only include letters, numbers, underscores (_), dashes (-) and fullstops (.)!")
         return v
     
