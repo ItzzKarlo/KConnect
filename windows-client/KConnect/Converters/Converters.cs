@@ -38,3 +38,19 @@ public class BusyToTextConverter : IValueConverter
     public object ConvertBack(object value, Type t, object p, CultureInfo c)
         => throw new NotImplementedException();
 }
+
+public class NullToVisibilityConverter : IValueConverter
+{
+    public object Convert(object value, Type t, object p, CultureInfo c)
+        => value is null ? Visibility.Visible : Visibility.Collapsed;
+    public object ConvertBack(object value, Type t, object p, CultureInfo c)
+        => throw new NotImplementedException();
+}
+
+public class NotNullToVisibilityConverter : IValueConverter
+{
+    public object Convert(object value, Type t, object p, CultureInfo c)
+        => value is null ? Visibility.Collapsed : Visibility.Visible;
+    public object ConvertBack(object value, Type t, object p, CultureInfo c)
+        => throw new NotImplementedException();
+}

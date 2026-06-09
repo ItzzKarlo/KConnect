@@ -1,6 +1,7 @@
 <Application x:Class="KConnect.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:KConnect.Converters"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
 
@@ -19,7 +20,9 @@
 
         <!-- Converters -->
         <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
-
+        <converters:NullToVisibilityConverter    x:Key="NullToVisibility"/>
+        <converters:NotNullToVisibilityConverter x:Key="NotNullToVisibility"/>
+        
         <!-- Primary Button (red, rounded) -->
         <Style x:Key="PrimaryButton" TargetType="Button">
             <Setter Property="Background"   Value="{StaticResource PrimaryRedBrush}"/>
@@ -116,6 +119,8 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        
+        
 
     </Application.Resources>
 </Application>

@@ -1,12 +1,245 @@
 <UserControl x:Class="KConnect.Views.ChatView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Background="#111111">
+             Background="#111111"
+             MinWidth="800" MinHeight="500">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+
+        <!-- Conversation item style -->
+        <Style x:Key="ConvItem" TargetType="ListBoxItem">
+            <Setter Property="Background"  Value="Transparent"/>
+            <Setter Property="Padding"     Value="12,10"/>
+            <Setter Property="Cursor"      Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Bg" Background="{TemplateBinding Background}"
+                                CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver"  Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="#1E1E1E"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="#2A0000"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
     <Grid>
-        <TextBlock Text="Chat — coming soon"
-                   Foreground="White"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   FontSize="20"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="280"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ═══════════════════════════ SIDEBAR ═══════════════════════════ -->
+        <Border Grid.Column="0" Background="#161616"
+                BorderBrush="#2A2A2A" BorderThickness="0,0,1,0">
+            <DockPanel>
+
+                <!-- Top bar: logo + username + logout -->
+                <Border DockPanel.Dock="Top" Background="#111111"
+                        Padding="16,14" BorderBrush="#2A2A2A" BorderThickness="0,0,0,1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="KConnect" FontSize="18" FontWeight="Bold"
+                                       Foreground="#FF0000"/>
+                            <TextBlock Text="{Binding CurrentUsername}"
+                                       Foreground="#CCAC58" FontSize="11"/>
+                        </StackPanel>
+                        <Button Grid.Column="1"
+                                Content="Sign out"
+                                Style="{StaticResource LinkButton}"
+                                Foreground="#666666" FontSize="11"
+                                Command="{Binding LogoutCommand}"
+                                VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+
+                <!-- Search box -->
+                <Border DockPanel.Dock="Top" Padding="12,10"
+                        BorderBrush="#2A2A2A" BorderThickness="0,0,0,1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0"
+                                 Style="{StaticResource DarkInput}"
+                                 Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                                 FontSize="13" Padding="10,8"
+                                 Tag="Search or start a chat..."/>
+                        <Button Grid.Column="1"
+                                Content="→"
+                                Style="{StaticResource PrimaryButton}"
+                                Padding="10,8"
+                                Margin="6,0,0,0"
+                                Command="{Binding SearchAndStartConversationCommand}"/>
+                    </Grid>
+                </Border>
+
+                <!-- Error message -->
+                <Border DockPanel.Dock="Top"
+                        Background="#2A0000" CornerRadius="4" Padding="10,6" Margin="8,4"
+                        Visibility="{Binding HasError, Converter={StaticResource BoolToVisibility}}">
+                    <TextBlock Text="{Binding ErrorMessage}" Foreground="#FF6666"
+                               FontSize="11" TextWrapping="Wrap"/>
+                </Border>
+
+                <!-- Conversation list -->
+                <ListBox ItemsSource="{Binding Conversations}"
+                         SelectedItem="{Binding SelectedConversation}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         ItemContainerStyle="{StaticResource ConvItem}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Text="{Binding DisplayName}"
+                                           Foreground="White" FontSize="14"
+                                           FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding LastMessage.Content}"
+                                           Foreground="#888888" FontSize="12"
+                                           TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+            </DockPanel>
+        </Border>
+
+        <!-- ═══════════════════════════ MAIN PANE ══════════════════════════ -->
+        <Grid Grid.Column="1">
+
+            <!-- Empty state -->
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Visibility="{Binding SelectedConversation, Converter={StaticResource NullToVisibility}}">
+                <TextBlock Text="💬" FontSize="48" HorizontalAlignment="Center"/>
+                <TextBlock Text="Select a conversation or search for someone"
+                           Foreground="#555555" FontSize="14"
+                           HorizontalAlignment="Center" Margin="0,12,0,0"/>
+            </StackPanel>
+
+            <!-- Chat pane (visible when a conversation is selected) -->
+            <Grid Visibility="{Binding SelectedConversation, Converter={StaticResource NotNullToVisibility}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Chat header -->
+                <Border Grid.Row="0" Background="#161616"
+                        Padding="20,14" BorderBrush="#2A2A2A" BorderThickness="0,0,0,1">
+                    <TextBlock Text="{Binding SelectedConversation.DisplayName}"
+                               Foreground="White" FontSize="16" FontWeight="SemiBold"/>
+                </Border>
+
+                <!-- Messages -->
+                <ScrollViewer Grid.Row="1" x:Name="MessageScroller"
+                              VerticalScrollBarVisibility="Auto"
+                              Padding="16,12">
+                    <ItemsControl ItemsSource="{Binding Messages}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,4">
+                                    <!-- Own messages: right-aligned red bubble -->
+                                    <Border HorizontalAlignment="Right"
+                                            MaxWidth="420"
+                                            Background="#8B0000"
+                                            CornerRadius="16,16,4,16"
+                                            Padding="14,8"
+                                            Margin="60,0,0,0">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsOwn}" Value="False">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Content}"
+                                                       Foreground="White" FontSize="14"
+                                                       TextWrapping="Wrap"/>
+                                            <TextBlock Text="{Binding TimeLabel}"
+                                                       Foreground="#FFAAAA" FontSize="10"
+                                                       HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- Their messages: left-aligned dark bubble -->
+                                    <Border HorizontalAlignment="Left"
+                                            MaxWidth="420"
+                                            Background="#222222"
+                                            CornerRadius="16,16,16,4"
+                                            Padding="14,8"
+                                            Margin="0,0,60,0">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsOwn}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding SenderUsername}"
+                                                       Foreground="#CCAC58" FontSize="11"
+                                                       FontWeight="SemiBold" Margin="0,0,0,3"/>
+                                            <TextBlock Text="{Binding Content}"
+                                                       Foreground="White" FontSize="14"
+                                                       TextWrapping="Wrap"/>
+                                            <TextBlock Text="{Binding TimeLabel}"
+                                                       Foreground="#888888" FontSize="10"
+                                                       Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <!-- Input bar -->
+                <Border Grid.Row="2" Background="#161616"
+                        Padding="16,12" BorderBrush="#2A2A2A" BorderThickness="0,1,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox Grid.Column="0"
+                                 x:Name="MessageBox"
+                                 Style="{StaticResource DarkInput}"
+                                 Text="{Binding MessageInput, UpdateSourceTrigger=PropertyChanged}"
+                                 FontSize="14" Padding="12,10"
+                                 AcceptsReturn="False"/>
+
+                        <Button Grid.Column="1"
+                                Content="Send"
+                                Style="{StaticResource PrimaryButton}"
+                                Margin="10,0,0,0"
+                                Padding="20,10"
+                                Command="{Binding SendMessageCommand}"/>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
     </Grid>
 </UserControl>

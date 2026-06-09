@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("KConnect")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+29971d9b2de447390cef1b193497cbb5776cc4ab")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2bec9ec8051726eb67673db84e212a613bdb0dab")]
 [assembly: System.Reflection.AssemblyProductAttribute("KConnect")]
 [assembly: System.Reflection.AssemblyTitleAttribute("KConnect")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
