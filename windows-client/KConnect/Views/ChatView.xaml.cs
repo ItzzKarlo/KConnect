@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Windows.Controls;
+using System.Windows.Input;
 using KConnect.Models;
 using KConnect.Services;
 using KConnect.ViewModels;
@@ -18,7 +19,6 @@ public partial class ChatView : UserControl
         _vm = new ChatViewModel(wsSvc);
         DataContext = _vm;
 
-        // Auto-scroll to bottom when new messages arrive
         _vm.MessagesLoaded += ScrollToBottom;
 
         _vm.LoggedOut += () =>
@@ -26,12 +26,22 @@ public partial class ChatView : UserControl
             MainWindow.Instance?.NavigateTo(new LoginView());
         };
 
-        // Wire Enter key to send
-        MessageBox.KeyDown += (_, e) =>
+        // Enter sends, Shift+Enter is reserved (AcceptsReturn=False anyway)
+        MsgInput.KeyDown += (_, e) =>
         {
-            if (e.Key == System.Windows.Input.Key.Enter && !System.Windows.Input.Keyboard.IsKeyDown(System.Windows.Input.Key.LeftShift))
+            if (e.Key == Key.Enter && !Keyboard.IsKeyDown(Key.LeftShift))
             {
                 _vm.SendMessageCommand.Execute(null);
+                e.Handled = true;
+            }
+        };
+
+        // Also allow Enter in the search box to trigger search
+        SearchBox.KeyDown += (_, e) =>
+        {
+            if (e.Key == Key.Enter)
+            {
+                _vm.SearchAndStartConversationCommand.Execute(null);
                 e.Handled = true;
             }
         };
