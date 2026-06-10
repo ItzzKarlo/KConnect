@@ -34,6 +34,9 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(user)
 
+    token = generate_email_token(user.email)
+    send_verification_email(user.email, user.username, token)
+
     return {
         "message": "Account successfully created. Please check your email to verify your account.",
         "user_id": str(user.id)
@@ -53,7 +56,7 @@ def verify_email(payload: VerifyEmailRequest, db: Session = Depends(get_db)):
     
     user.is_verified = True
     db.commit()
-    return {"message", "Email verified successfully."}
+    return {"message": "Email verified successfully."}
 
 @router.post("/login", response_model=TokenResponse)
 def login(payload: LoginRequest, db: Session = Depends(get_db)):
@@ -93,6 +96,16 @@ def resend_verification(payload: ForgotPasswordRequest, db: Session = Depends(ge
         token = generate_email_token(user.email)
         send_verification_email(user.email, user.username, token)
     return {"message": "If that email exists and is unverified, a new link has been sent for email verification."}
+
+@router.post("/forgot-password")
+def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == payload.email).first()
+    if user and user.is_active:
+        token = generate_email_token(user.email, salt="password-reset")
+        send_password_reset_email(user.email, user.username, token)
+    return {
+        "message": "If that email is registered, a reset-password link has been sent."
+    }
 
 @router.post("/reset-password")
 def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db)):
