@@ -1,6 +1,7 @@
 # !/backend/app/api/chats.py
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import desc, func
 from uuid import UUID
 from app.core.database import get_db
 from app.api.deps import get_current_user
@@ -44,10 +45,21 @@ def list_conversations(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    # Subquery: latest message timestamp per conversation
+    latest_msg = (
+        db.query(
+            Message.conversation_id,
+            func.max(Message.created_at).label("last_at"),
+        )
+        .group_by(Message.conversation_id)
+        .subquery()
+    )
+
     convs = (
         db.query(Conversation)
         .filter(Conversation.members.any(User.id == current_user.id))
-        .order_by(Conversation.created_at.desc())
+        .outerjoin(latest_msg, Conversation.id == latest_msg.c.conversation_id)
+        .order_by(desc(latest_msg.c.last_at).nullslast(), desc(Conversation.created_at))
         .all()
     )
     return [_serialize(c, current_user) for c in convs]
@@ -55,6 +67,8 @@ def list_conversations(
 @router.get("/{conv_id}/messages", response_model=list[MessageOut])
 def get_messages(
     conv_id: UUID,
+    limit: int = Query(default=50, le=200),
+    before: str | None = Query(default=None, description="ISO datetime cursor for pagination"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -64,13 +78,20 @@ def get_messages(
     if current_user not in conv.members:
         raise HTTPException(403, "Not a member of this conversation")
 
-    messages = (
+    q = (
         db.query(Message)
         .filter(Message.conversation_id == conv_id, Message.is_deleted == False)
-        .order_by(Message.created_at.asc())
-        .limit(100)
-        .all()
     )
+
+    if before:
+        from datetime import datetime
+        try:
+            cursor_dt = datetime.fromisoformat(before)
+            q = q.filter(Message.created_at < cursor_dt)
+        except ValueError:
+            pass
+
+    messages = q.order_by(Message.created_at.asc()).limit(limit).all()
     return [_msg_out(m) for m in messages]
 
 def _serialize(conv: Conversation, current_user: User) -> dict:
